@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # 1. Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: notebook_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root      # Mật khẩu root
+      MYSQL_DATABASE: notebook_db    # Tên database sẽ tạo
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql       # Giúp dữ liệu không mất khi tắt máy
+    command: --default-authentication-plugin=mysql_native_password
+
+  # 2. Tool quản lý DB (Giao diện web cho dễ nhìn)
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: notebook_pma
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - '8081:80'                    # Chạy ở port 8081
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  db_data:
